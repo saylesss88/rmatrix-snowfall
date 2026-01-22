@@ -1,4 +1,4 @@
-# rmatrix
+# r-matrix-snowfall
 
 Generates a 'Matrix'-like screen of falling NixOS characters in your terminal
 [![rmatrix](demo.gif)](https://asciinema.org/a/YVqVxfOw39G4nRMX)
