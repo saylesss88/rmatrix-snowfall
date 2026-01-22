@@ -27,8 +27,12 @@ where
 }
 
 fn rand_char() -> char {
-    let (randnum, randmin) = (93, 33);
-    RNG.with(|rng| (*rng).borrow_mut().r#gen::<u8>() % randnum + randmin) as char
+    // Mix of snowflakes and lambda symbols for NixOS theme
+    let snowflake_chars = ['❄', '❅', '❆', '*', '·', '•', 'λ', 'Λ'];
+    RNG.with(|rng| {
+        let idx = (*rng).borrow_mut().r#gen::<usize>() % snowflake_chars.len();
+        snowflake_chars[idx]
+    })
 }
 
 fn coin_flip() -> bool {
