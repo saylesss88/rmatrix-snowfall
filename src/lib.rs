@@ -99,8 +99,8 @@ impl Column {
         } else {
             config.colour
         };
-        // 50/50 chance the head is white
-        self.col[0].white = coin_flip();
+        // Reduced chance for white highlights
+        self.col[0].white = rng::<u8>() < 64; // ~25% instead of 50%
     }
 }
 
