@@ -1,10 +1,19 @@
 [package]
 name = "r-matrix-snowfall"
-description = "Rust port of cmatrix."
-version = "0.2.7"
+description = "A NixOS-themed matrix snowfall screensaver (Fork of rmatrix)"
+version = "0.1.0"
 edition = "2024"
-authors = ["Lucas Rooyakkers <lucas.rooyakkers@protonmail.com>"]
+authors = [
+	"Lucas Rooyakkers <lucas.rooyakkers@protonmail.com>",
+	"T.Sawyer <saylesss87@proton.me",
+]
 license = 'GPL-3.0-or-later'
+exclude = [
+	"docs",
+	"demo.gif",
+	".github",
+	".gitignore"
+]
 
 [dependencies]
 pancurses = {version = "0.17.0", features = ["wide"]}
