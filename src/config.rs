@@ -4,8 +4,8 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
-    name = "rmatrix",
-    about = "Shows a scrolling 'Matrix' like screen in linux"
+    name = "rmatrix-snowfall",
+    about = "Shows a scrolling NixOS snowflake animation"
 )]
 /// The struct for handling command line arguments
 struct Opt {
