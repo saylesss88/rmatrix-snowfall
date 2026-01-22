@@ -1,7 +1,7 @@
 # rmatrix
 
 Generates a 'Matrix'-like screen of falling characters in your terminal
-[![rmatrix](demo.gif)](https://asciinema.org/a/qekkADKJUG6MyGgU)
+[![rmatrix](demo.gif)](https://asciinema.org/a/YVqVxfOw39G4nRMX)
 
 The original [`cmatrix`](https://github.com/abishekvashok/cmatrix) was written
 in C, and crashes when you wildly resize the window. The rust version is
@@ -18,6 +18,9 @@ performance, due to the underlying use of `ncurses`.
 
 ## Installation
 
-### cargo
+I haven't published this to `crates.io yet`, you'll have to clone the repo and
+run this while in the `rmatrix-snowfall` directory:
 
-`cargo install r-matrix-snowfall`
+```bash
+cargo install --path .
+```
