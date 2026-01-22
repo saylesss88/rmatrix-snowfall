@@ -72,8 +72,8 @@ impl Column {
     /// Return a column keyed by a random number generator
     fn new(lines: usize) -> Self {
         Column {
-            length: rng::<usize>() % (lines - 3) + 3,
-            spaces: rng::<usize>() % lines + 1,
+            length: rng::<usize>() % (lines - 1) + 1, // Shorter streams
+            spaces: rng::<usize>() % (lines * 2) + 1, // More spacing
             col: (0..lines).map(|_| Block::default()).collect(),
         }
     }
@@ -168,7 +168,7 @@ impl Matrix {
             } else {
                 // Display spaces until next stream
                 col.col[0].val = ' ';
-                col.length = rng::<usize>() % (lines - 3) + 3;
+                col.length = rng::<usize>() % (lines - 1) + 1; // Shorter streams
             }
         });
         if config.oldstyle {
