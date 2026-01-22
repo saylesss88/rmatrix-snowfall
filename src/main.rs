@@ -1,5 +1,5 @@
 extern crate pancurses;
-extern crate r_matrix;
+extern crate r_matrix_snowfall;
 extern crate signal_hook;
 
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -9,15 +9,15 @@ use pancurses::*;
 use signal_hook::consts::signal::{SIGINT, SIGQUIT, SIGTERM, SIGWINCH};
 use signal_hook::flag;
 
-use r_matrix::config::Config;
-use r_matrix::Matrix;
+use r_matrix_snowfall::config::Config;
+use r_matrix_snowfall::Matrix;
 
 fn main() {
     // Get command line args
     let mut config = Config::default();
 
     // Save the terminal state and start up ncurses
-    let window = r_matrix::ncurses_init();
+    let window = r_matrix_snowfall::ncurses_init();
 
     // Create atomic bools that Unix signals can register.
     let exit_signal = Arc::new(AtomicBool::new(false));
@@ -38,12 +38,12 @@ fn main() {
     loop {
         // SIGWINCH: Make a new matrix for the new terminal size.
         if resize_signal.swap(false, Ordering::Relaxed) {
-            r_matrix::resize_window();
+            r_matrix_snowfall::resize_window();
             matrix = Matrix::default();
         }
         // Exit the program on exit signals (SIGINT, SIGTERM, SIGQUIT).
         if exit_signal.swap(false, Ordering::Relaxed) {
-            r_matrix::finish();
+            r_matrix_snowfall::finish();
         }
 
         // Handle a keypress.

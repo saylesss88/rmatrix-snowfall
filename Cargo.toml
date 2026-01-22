@@ -1,5 +1,5 @@
 [package]
-name = "r-matrix"
+name = "r-matrix-snowfall"
 description = "Rust port of cmatrix."
 version = "0.2.7"
 edition = "2024"
@@ -7,8 +7,8 @@ authors = ["Lucas Rooyakkers <lucas.rooyakkers@protonmail.com>"]
 license = 'GPL-3.0-or-later'
 
 [dependencies]
-pancurses = "0.17.0"
-rand = { version = "0.8.5", features = ["small_rng"] }
-signal-hook = { version = "0.3.17", features = ["extended-siginfo"] }
+pancurses = {version = "0.17.0", features = ["wide"]}
+rand = {version = "0.8.5", features = ["small_rng"]}
+signal-hook = {version = "0.3.17", features = ["extended-siginfo"]}
 structopt = "0.3.26"
 term_size = "0.3.2"

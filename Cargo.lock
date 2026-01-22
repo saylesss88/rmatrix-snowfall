@@ -203,7 +203,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "r-matrix"
+name = "r-matrix-snowfall"
 version = "0.2.7"
 dependencies = [
  "pancurses",
