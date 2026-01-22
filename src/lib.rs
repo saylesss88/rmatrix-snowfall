@@ -235,7 +235,7 @@ impl Matrix {
                     last_colour = mcolour;
                 }
                 // Draw the character.
-                window.addch(self[i][j].val as chtype);
+                window.addstr(&self[i][j].val.to_string());
             }
         }
         napms(config.update as i32 * 10);
