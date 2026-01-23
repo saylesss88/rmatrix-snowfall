@@ -2,8 +2,10 @@
 
 [![Flake](https://img.shields.io/badge/Nix-Flake-bright_purple?logo=nixos)](https://flakehub.com/f/saylesss88/rmatrix-snowfall)
 
-Generates a 'Matrix'-like screen of falling NixOS characters in your terminal
-[![rmatrix](demo.gif)](https://asciinema.org/a/YVqVxfOw39G4nRMX)
+This is a fork of [r-matrix](https://crates.io/crates/r-matrix)
+
+Generates a 'Matrix'-like screen of falling snowflake characters and lambdas in
+your terminal [![rmatrix](demo.gif)](https://asciinema.org/a/YVqVxfOw39G4nRMX)
 
 The original [`cmatrix`](https://github.com/abishekvashok/cmatrix) was written
 in C, and crashes when you wildly resize the window. The rust version is
@@ -33,9 +35,7 @@ nix run github:saylesss88/rmatrix-snowfall
 **Flake Input**
 
 ```nix
-inputs = {
-  rmatrix-snowfall.url = "github:saylesss88/rmatrix-snowfall";
-};
+rmatrix-snowfall.url = "github:saylesss88/rmatrix-snowfall";
 ```
 
 NixOS `systemPackages`:
