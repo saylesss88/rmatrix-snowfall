@@ -41,5 +41,9 @@ rmatrix-snowfall.url = "github:saylesss88/rmatrix-snowfall";
 NixOS `systemPackages`:
 
 ```nix
-environment.systemPackages = [ inputs.rmatrix-snowfall.packages.${pkgs.system}.default ];
+{ inputs, pkgs, ... }: {
+environment.systemPackages = [ inputs.rmatrix-snowfall.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+}
 ```
+
+> To use `inputs`, pass it through `specialArgs`
