@@ -35,9 +35,6 @@ fn rand_char() -> char {
     })
 }
 
-fn coin_flip() -> bool {
-    RNG.with(|rng| (*rng).borrow_mut().r#gen())
-}
 
 #[derive(Clone)]
 pub struct Block {
