@@ -2,6 +2,7 @@ extern crate pancurses;
 extern crate r_matrix_snowfall;
 extern crate signal_hook;
 
+use clap::Parser;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -12,7 +13,13 @@ use signal_hook::flag;
 use r_matrix_snowfall::config::Config;
 use r_matrix_snowfall::Matrix;
 
+/// A terminal-based screensaver matrix snowfall
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Args {}
+
 fn main() {
+    let _args = Args::parse();
     // Get command line args
     let mut config = Config::default();
 
