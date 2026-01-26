@@ -4,11 +4,10 @@
 
 [![Nix](https://img.shields.io/badge/Nix-5277C3?style=flat&logo=nixos&logoColor=white)](https://nixos.org)
 
-
 This is a fork of [r-matrix](https://crates.io/crates/r-matrix)
 
 Generates a 'Matrix'-like screen of falling snowflake characters and lambdas in
-your terminal [![rmatrix](demo.gif)](https://asciinema.org/a/YVqVxfOw39G4nRMX)
+your terminal [![rmatrix](demo.gif)](https://asciinema.org/a/rjfdPpajCzwPYD98)
 
 The original [`cmatrix`](https://github.com/abishekvashok/cmatrix) was written
 in C, and crashes when you wildly resize the window. The rust version is
