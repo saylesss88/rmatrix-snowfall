@@ -28,6 +28,13 @@ performance, due to the underlying use of `ncurses`.
 cargo install r-matrix-snowfall
 ```
 
+Version check:
+
+```bash
+r-matrix-snowfall -V
+r-matrix-snowfall --version
+```
+
 **Nix**
 
 ```bash
