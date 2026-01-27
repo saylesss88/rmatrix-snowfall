@@ -1,7 +1,7 @@
 [package]
 name = "r-matrix-snowfall"
 description = "A NixOS-themed matrix snowfall screensaver (Fork of rmatrix)"
-version = "0.1.4"
+version = "0.2.4"
 edition = "2024"
 authors = [
 	"Lucas Rooyakkers <lucas.rooyakkers@protonmail.com>",
@@ -16,9 +16,8 @@ license = 'GPL-3.0-or-later'
 exclude = ["result", "docs", "demo.gif", ".github", ".gitignore"]
 
 [dependencies]
-pancurses = {version = "0.17.0", features = ["wide"]}
+crossterm = "0.29.0"
 rand = {version = "0.8.5", features = ["small_rng"]}
-signal-hook = {version = "0.3.17", features = ["extended-siginfo"]}
 structopt = "0.3.26"
 term_size = "0.3.2"
 clap = {version = "4.5.54", features = ["derive"]}
