@@ -4,7 +4,8 @@
 
 [![Nix](https://img.shields.io/badge/Nix-5277C3?style=flat&logo=nixos&logoColor=white)](https://nixos.org)
 
-This is a fork of [r-matrix](https://crates.io/crates/r-matrix)
+This is a fork of [r-matrix](https://crates.io/crates/r-matrix) that uses
+`crossterm` instead of `pancurses`.
 
 Generates a 'Matrix'-like screen of falling snowflake characters and lambdas in
 your terminal [![rmatrix](demo.gif)](https://asciinema.org/a/rjfdPpajCzwPYD98)
@@ -16,11 +17,10 @@ performance, due to the underlying use of `ncurses`.
 
 ## Controls
 
-| Key         | Control                                             |
-| ----------- | --------------------------------------------------- |
-| 1-9         | Speed the letters fall (1 is fastest, 9 is slowest) |
-| Shift + 1-9 | Color of the characters                             |
-| r           | Rainbow mode                                        |
+| Key         | Control                 |
+| ----------- | ----------------------- |
+| Shift + 1-9 | Color of the characters |
+| r           | Rainbow mode            |
 
 ## Installation
 
