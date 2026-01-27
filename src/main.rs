@@ -1,65 +1,58 @@
-extern crate pancurses;
-extern crate r_matrix_snowfall;
-extern crate signal_hook;
-
 use clap::Parser;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
-
-use pancurses::*;
-use signal_hook::consts::signal::{SIGINT, SIGQUIT, SIGTERM, SIGWINCH};
-use signal_hook::flag;
-
-use r_matrix_snowfall::config::Config;
-use r_matrix_snowfall::Matrix;
+use crossterm::{
+    cursor,
+    event::{self, Event, KeyCode, KeyEvent},
+    execute,
+    terminal::{self, disable_raw_mode, enable_raw_mode},
+};
+use r_matrix_snowfall::{config::Config, Matrix};
+use std::io::stdout;
+use std::time::Duration;
 
 /// A terminal-based screensaver matrix snowfall
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args {}
 
-fn main() {
-    let _args = Args::parse();
-    // Get command line args
+fn main() -> std::io::Result<()> {
+    // 1. Setup
     let mut config = Config::default();
+    enable_raw_mode()?;
+    let mut stdout = stdout();
+    execute!(stdout, terminal::EnterAlternateScreen, cursor::Hide)?;
 
-    // Save the terminal state and start up ncurses
-    let window = r_matrix_snowfall::ncurses_init();
+    let mut matrix = Matrix::default();
+    let mut running = true;
 
-    // Create atomic bools that Unix signals can register.
-    let exit_signal = Arc::new(AtomicBool::new(false));
-    let resize_signal = Arc::new(AtomicBool::new(false));
-
-    // Look for window-resize events.
-    flag::register(SIGWINCH, Arc::clone(&resize_signal)).unwrap();
-
-    // Look for exit-events.
-    flag::register(SIGINT, Arc::clone(&exit_signal)).unwrap();
-    flag::register(SIGTERM, Arc::clone(&exit_signal)).unwrap();
-    flag::register(SIGQUIT, Arc::clone(&exit_signal)).unwrap();
-
-    // Create the board
-    let mut matrix: Matrix = Matrix::default();
-
-    // Main event loop
-    loop {
-        // SIGWINCH: Make a new matrix for the new terminal size.
-        if resize_signal.swap(false, Ordering::Relaxed) {
-            r_matrix_snowfall::resize_window();
-            matrix = Matrix::default();
-        }
-        // Exit the program on exit signals (SIGINT, SIGTERM, SIGQUIT).
-        if exit_signal.swap(false, Ordering::Relaxed) {
-            r_matrix_snowfall::finish();
+    // 2. Loop
+    while running {
+        // Poll for input (non-blocking)
+        if event::poll(Duration::from_millis(10))? {
+            match event::read()? {
+                Event::Key(KeyEvent { code, .. }) => {
+                    if let KeyCode::Char(c) = code {
+                        if config.handle_keypress(c) {
+                            running = false;
+                        }
+                    }
+                }
+                Event::Resize(_, _) => {
+                    matrix.resize();
+                    execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
+                }
+                _ => {}
+            }
         }
 
-        // Handle a keypress.
-        if let Some(Input::Character(c)) = window.getch() {
-            config.handle_keypress(c)
+        // Draw
+        if !config.pause {
+            matrix.arrange(&config);
+            matrix.draw(&mut stdout, &config)?;
         }
-
-        // Update and redraw the board.
-        matrix.arrange(&config);
-        matrix.draw(&window, &config);
     }
+
+    // 3. Cleanup
+    execute!(stdout, cursor::Show, terminal::LeaveAlternateScreen)?;
+    disable_raw_mode()?;
+    Ok(())
 }
