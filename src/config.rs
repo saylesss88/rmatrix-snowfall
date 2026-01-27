@@ -1,5 +1,4 @@
-use pancurses::*;
-
+use crossterm::style::Color;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -68,7 +67,7 @@ pub struct Config {
     pub screensaver: bool,
     pub xwindow: bool,
     pub update: usize,
-    pub colour: i16,
+    pub colour: Color,
     pub rainbow: bool,
     pub pause: bool,
 }
@@ -77,17 +76,15 @@ impl Default for Config {
     /// Get the new config object based on command line arguments
     fn default() -> Self {
         let opt = Opt::from_args();
-
         let colour = match opt.colour.as_ref() {
-            "green" => COLOR_GREEN,
-            "red" => COLOR_RED,
-            "blue" => COLOR_BLUE,
-            "white" => COLOR_WHITE,
-            "yellow" => COLOR_YELLOW,
-            "cyan" => COLOR_CYAN,
-            "magenta" => COLOR_MAGENTA,
-            "black" => COLOR_BLACK,
-            _ => unreachable!(),
+            "green" => Color::Green,
+            "red" => Color::Red,
+            "white" => Color::White,
+            "yellow" => Color::Yellow,
+            "cyan" => Color::Cyan,
+            "magenta" => Color::Magenta,
+            "black" => Color::Black,
+            _ => Color::Blue,
         };
 
         Config {
@@ -106,53 +103,53 @@ impl Default for Config {
 
 impl Config {
     /// Update the config based on any keypresses
-    pub fn handle_keypress(&mut self, keypress: char) {
-        // Exit if in screensaver mode
+    /// Returns true if the program should exit
+    pub fn handle_keypress(&mut self, keypress: char) -> bool {
         if self.screensaver {
-            super::finish();
+            return true;
         }
 
         match keypress {
-            'q' => super::finish(),
+            'q' => return true,
             'b' => self.bold = 1,
             'B' => self.bold = 2,
             'n' => self.bold = 0,
             '!' => {
-                self.colour = COLOR_RED;
+                self.colour = Color::Red;
                 self.rainbow = false;
             }
             '@' => {
-                self.colour = COLOR_GREEN;
+                self.colour = Color::Green;
                 self.rainbow = false;
             }
             '#' => {
-                self.colour = COLOR_YELLOW;
+                self.colour = Color::Yellow;
                 self.rainbow = false;
             }
             '$' => {
-                self.colour = COLOR_BLUE;
+                self.colour = Color::Blue;
                 self.rainbow = false;
             }
             '%' => {
-                self.colour = COLOR_MAGENTA;
+                self.colour = Color::Magenta;
                 self.rainbow = false;
             }
             'r' => {
                 self.rainbow = true;
             }
             '^' => {
-                self.colour = COLOR_CYAN;
+                self.colour = Color::Cyan;
                 self.rainbow = false;
             }
             '&' => {
-                self.colour = COLOR_WHITE;
+                self.colour = Color::White;
                 self.rainbow = false;
             }
             'p' | 'P' => self.pause = !self.pause,
-            '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' => {
-                self.update = keypress as usize - 48 // Sneaky way to avoid parsing
-            }
+            '1'..='9' => self.update = keypress as usize - 48,
+            '0' => self.update = 0,
             _ => {}
         }
+        false
     }
 }
