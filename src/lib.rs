@@ -1,7 +1,6 @@
 use crossterm::{
     cursor, queue,
-    style::{self, Color, Stylize},
-    terminal,
+    style::{self, Color},
 };
 use rand::distributions::{Distribution, Standard};
 use rand::rngs::SmallRng;
@@ -51,7 +50,7 @@ impl Default for Block {
         Block {
             val: ' ',
             white: false,
-            color: COLOR::RED,
+            color: Color::Red,
         }
     }
 }
@@ -176,7 +175,7 @@ impl Matrix {
             let mut in_stream = false;
 
             let mut last_was_white = false; // Keep track of white heads
-            let mut running_color = COLOR_CYAN;
+            let mut running_color = Color::Cyan;
 
             col.col.iter_mut().for_each(|block| {
                 if !in_stream {
