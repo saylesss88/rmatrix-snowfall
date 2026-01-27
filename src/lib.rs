@@ -1,19 +1,17 @@
-extern crate pancurses;
-extern crate rand;
-extern crate structopt;
-extern crate term_size;
-
-use std::collections::VecDeque;
-
-pub mod config;
-
-use config::Config;
-
-use pancurses::*;
+use crossterm::{
+    cursor, queue,
+    style::{self, Color, Stylize},
+    terminal,
+};
 use rand::distributions::{Distribution, Standard};
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
 use std::cell::RefCell;
+use std::collections::VecDeque;
+use std::io::{self, Write};
+
+pub mod config;
+use config::Config;
 
 thread_local! {
     static RNG: RefCell<SmallRng> = RefCell::new(SmallRng::from_entropy());
@@ -35,12 +33,11 @@ fn rand_char() -> char {
     })
 }
 
-
 #[derive(Clone)]
 pub struct Block {
     val: char,
     white: bool,
-    color: i16,
+    color: Color,
 }
 
 impl Block {
@@ -54,7 +51,7 @@ impl Default for Block {
         Block {
             val: ' ',
             white: false,
-            color: COLOR_RED,
+            color: COLOR::RED,
         }
     }
 }
@@ -85,19 +82,18 @@ impl Column {
         self.col[0].val = rand_char();
         self.col[0].color = if config.rainbow {
             match rng::<usize>() % 6 {
-                0 => COLOR_GREEN,
-                1 => COLOR_BLUE,
-                2 => COLOR_WHITE,
-                3 => COLOR_YELLOW,
-                4 => COLOR_CYAN,
-                5 => COLOR_MAGENTA,
+                0 => Color::Green,
+                1 => Color::Blue,
+                2 => Color::White,
+                3 => Color::Yellow,
+                4 => Color::Cyan,
+                5 => Color::Magenta,
                 _ => unreachable!(),
             }
         } else {
             config.colour
         };
-        // Reduced chance for white highlights
-        self.col[0].white = rng::<u8>() < 64; // ~25% instead of 50%
+        self.col[0].white = rng::<u8>() < 64;
     }
 }
 
@@ -210,77 +206,47 @@ impl Matrix {
         });
     }
     /// Draw the matrix on the screen
-    pub fn draw(&self, window: &Window, config: &Config) {
-        //TODO: Use an iterator or something nicer
+    pub fn draw(&self, w: &mut impl Write, config: &Config) -> io::Result<()> {
         for j in 1..self.num_lines() {
-            // Saving the last colour allows us to call `attron` only when the colour changes.
-            let mut last_colour: i16 = self[0][j].color;
-            window.attron(COLOR_PAIR(last_colour as chtype));
-
             for i in 0..self.num_columns() {
-                // Pick the colour we need
-                let mcolour = if self[i][j].white {
-                    COLOR_WHITE
+                let block = &self[i][j];
+
+                // Skip drawing spaces to optimize?
+                // Ncurses overwrites; crossterm needs explicit handling or just overwrite.
+
+                let color = if block.white {
+                    Color::White
                 } else {
-                    self[i][j].color
+                    block.color
                 };
 
-                window.mv(j as i32 - 1, 2 * i as i32); // Move the cursor
-                if last_colour != mcolour {
-                    // Set the colour in ncurses.
-                    window.attron(COLOR_PAIR(mcolour as chtype));
-                    last_colour = mcolour;
-                }
-                // Draw the character.
-                window.addstr(&self[i][j].val.to_string());
+                // Bounds check to prevent panic
+                // Crossterm is 0-indexed for 0.28+ (usually), but safe to clamp
+                let x = (2 * i) as u16;
+                let y = (j as u16).saturating_sub(1);
+
+                // Simple optimization: don't draw if off screen
+                // But we need to check terminal size dynamically or assume
+                // the matrix size matches the terminal.
+
+                queue!(
+                    w,
+                    cursor::MoveTo(x, y),
+                    style::SetForegroundColor(color),
+                    style::Print(block.val)
+                )?;
             }
         }
-        napms(config.update as i32 * 10);
-    }
-}
-
-/// Clean up ncurses stuff when we're ready to exit
-pub fn finish() {
-    curs_set(1);
-    endwin();
-    std::process::exit(0);
-}
-
-/// ncurses functions calls that set up the screen and set important variables
-pub fn ncurses_init() -> Window {
-    let window = initscr();
-    window.nodelay(true);
-    window.refresh();
-
-    noecho();
-    nonl();
-    cbreak();
-    curs_set(0);
-
-    if has_colors() {
-        start_color();
-        if use_default_colors() != ERR {
-            init_pair(COLOR_BLACK, -1, -1);
-            init_pair(COLOR_GREEN, COLOR_GREEN, -1);
-            init_pair(COLOR_WHITE, COLOR_WHITE, -1);
-            init_pair(COLOR_RED, COLOR_RED, -1);
-            init_pair(COLOR_CYAN, COLOR_CYAN, -1);
-            init_pair(COLOR_MAGENTA, COLOR_MAGENTA, -1);
-            init_pair(COLOR_BLUE, COLOR_BLUE, -1);
-            init_pair(COLOR_YELLOW, COLOR_YELLOW, -1);
-        } else {
-            init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK);
-            init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLACK);
-            init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
-            init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
-            init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-            init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
-            init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
-            init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK);
-        }
+        w.flush()?;
+        // Sleep is handled in main loop in crossterm usually, but we can keep it here or move it.
+        // Ncurses 'napms' -> std::thread::sleep
+        std::thread::sleep(std::time::Duration::from_millis(config.update as u64 * 10));
+        Ok(())
     }
 
-    window
+    pub fn resize(&mut self) {
+        *self = Matrix::default();
+    }
 }
 
 fn get_term_size() -> (usize, usize) {
@@ -302,10 +268,4 @@ fn get_term_size() -> (usize, usize) {
         }
         None => (10, 10),
     }
-}
-
-pub fn resize_window() {
-    //TODO: Find a way to do this without exiting ncurses
-    endwin();
-    initscr();
 }
