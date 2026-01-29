@@ -1,65 +1,66 @@
+use clap::{ArgAction, Parser};
 use crossterm::style::Color;
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(
-    name = "rmatrix-snowfall",
-    about = "Shows a scrolling NixOS snowflake animation"
-)]
-/// The struct for handling command line arguments
+#[derive(Debug, Parser)]
+#[command(author, version, about)]
+#[allow(clippy::struct_excessive_bools)]
 struct Opt {
-    #[structopt(short = "b", parse(from_occurrences))]
-    /// Bold characters on
-    bold: isize,
+    /// Bold characters on (can be used multiple times: -b, -bb)
+    #[arg(short = 'b', action = ArgAction::Count)]
+    bold: u8,
 
-    #[structopt(short = "l", long = "console")]
     /// Linux mode (use matrix console font)
+    #[arg(short = 'l', long = "console")]
     console: bool,
 
-    #[structopt(short = "o", long = "oldstyle")]
     /// Use old-style scrolling
+    #[arg(short = 'o', long = "oldstyle")]
     oldstyle: bool,
 
-    #[structopt(short = "s", long = "screensaver")]
     /// "Screensaver" mode, exits on first keystroke
+    #[arg(short = 's', long = "screensaver")]
     screensaver: bool,
 
-    #[structopt(short = "x", long = "xwindow")]
     /// X window mode, use if your xterm is using mtx.pcf
+    #[arg(short = 'x', long = "xwindow")]
     xwindow: bool,
 
-    #[structopt(
-        short = "u",
+    /// Screen update delay
+    #[arg(
+        short = 'u',
         long = "update",
         default_value = "6",
-        parse(try_from_str = validate_update)
+        value_parser = validate_update
     )]
-    /// Screen update delay
     update: usize,
 
-    #[structopt(
-        short = "C",
+    /// Colour of the snowfall
+    #[arg(
+        short = 'C',
         long = "colour",
         default_value = "blue",
-        possible_values = &["green", "red", "blue", "white", "yellow", "cyan", "magenta", "black"]
+        value_parser = ["green", "red", "blue", "white", "yellow", "cyan", "magenta", "black"]
     )]
     colour: String,
 
-    #[structopt(short = "r", long = "rainbow")]
     /// Rainbow mode
+    #[arg(short = 'r', long = "rainbow")]
     rainbow: bool,
 }
 
-fn validate_update(n: &str) -> Result<usize, &'static str> {
-    if let Ok(n) = n.parse::<usize>() {
-        if n <= 10 {
-            return Ok(n);
-        }
+/// Validates that the update speed is between 1 and 10
+fn validate_update(n: &str) -> Result<usize, String> {
+    let val = n
+        .parse::<usize>()
+        .map_err(|_| "must be a number".to_string())?;
+    if (1..=10).contains(&val) {
+        Ok(val)
+    } else {
+        Err("must be between 1 and 10".to_string())
     }
-    Err("must be a number between 1 and 10")
 }
 
-/// The global state object
+#[allow(clippy::struct_excessive_bools)]
 pub struct Config {
     pub bold: isize,
     pub console: bool,
@@ -73,10 +74,11 @@ pub struct Config {
 }
 
 impl Default for Config {
-    /// Get the new config object based on command line arguments
     fn default() -> Self {
-        let opt = Opt::from_args();
-        let colour = match opt.colour.as_ref() {
+        // In Clap v4, we use parse() instead of from_args()
+        let opt = Opt::parse();
+
+        let colour = match opt.colour.as_str() {
             "green" => Color::Green,
             "red" => Color::Red,
             "white" => Color::White,
@@ -87,8 +89,8 @@ impl Default for Config {
             _ => Color::Blue,
         };
 
-        Config {
-            bold: opt.bold,
+        Self {
+            bold: opt.bold as isize,
             console: opt.console,
             oldstyle: opt.oldstyle,
             screensaver: opt.screensaver,
@@ -102,9 +104,7 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Update the config based on any keypresses
-    /// Returns true if the program should exit
-    pub fn handle_keypress(&mut self, keypress: char) -> bool {
+    pub const fn handle_keypress(&mut self, keypress: char) -> bool {
         if self.screensaver {
             return true;
         }
@@ -134,9 +134,7 @@ impl Config {
                 self.colour = Color::Magenta;
                 self.rainbow = false;
             }
-            'r' => {
-                self.rainbow = true;
-            }
+            'r' => self.rainbow = true,
             '^' => {
                 self.colour = Color::Cyan;
                 self.rainbow = false;
@@ -146,7 +144,7 @@ impl Config {
                 self.rainbow = false;
             }
             'p' | 'P' => self.pause = !self.pause,
-            '1'..='9' => self.update = keypress as usize - 48,
+            '1'..='9' => self.update = (keypress as usize).saturating_sub(48),
             '0' => self.update = 0,
             _ => {}
         }

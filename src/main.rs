@@ -29,11 +29,13 @@ fn main() -> std::io::Result<()> {
         // Poll for input (non-blocking)
         if event::poll(Duration::from_millis(10))? {
             match event::read()? {
-                Event::Key(KeyEvent { code, .. }) => {
-                    if let KeyCode::Char(c) = code {
-                        if config.handle_keypress(c) {
-                            running = false;
-                        }
+                // Collapsed: the pattern extracts 'c' directly from the KeyEvent
+                Event::Key(KeyEvent {
+                    code: KeyCode::Char(c),
+                    ..
+                }) => {
+                    if config.handle_keypress(c) {
+                        running = false;
                     }
                 }
                 Event::Resize(_, _) => {
