@@ -10,7 +10,7 @@ This is a fork of [r-matrix](https://crates.io/crates/r-matrix) that uses
 Generates a 'Matrix'-like screen of falling snowflake characters and lambdas in
 your terminal
 
-![screenshot1](https://raw.githubusercontent.com/saylesss88/r-matrix-snowfall/master/assets/demo.png)
+![screenshot1](https://raw.githubusercontent.com/saylesss88/r-matrix-snowfall/master/assets/demo.gif)
 
 The original [`cmatrix`](https://github.com/abishekvashok/cmatrix) was written
 in C, and crashes when you wildly resize the window. The rust version is
