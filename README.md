@@ -12,7 +12,6 @@ your terminal [![rmatrix](demo.gif)](https://asciinema.org/a/rjfdPpajCzwPYD98)
 
 ![screenshot1](https://raw.githubusercontent.com/saylesss88/mdbook-kanagawa-theme/master/demo.gif)
 
-
 The original [`cmatrix`](https://github.com/abishekvashok/cmatrix) was written
 in C, and crashes when you wildly resize the window. The rust version is
 memory-safe, and doesn't crash so easily. Both versions have comparable
@@ -23,6 +22,7 @@ performance, due to the underlying use of `ncurses`.
 | Key         | Control                 |
 | ----------- | ----------------------- |
 | Shift + 1-9 | Color of the characters |
+| 1 - 9       | Speed 1 = fastest       |
 | r           | Rainbow mode            |
 
 ## Installation
