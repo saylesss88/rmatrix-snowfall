@@ -8,9 +8,9 @@ This is a fork of [r-matrix](https://crates.io/crates/r-matrix) that uses
 `crossterm` instead of `pancurses`.
 
 Generates a 'Matrix'-like screen of falling snowflake characters and lambdas in
-your terminal [![rmatrix](demo.gif)](https://asciinema.org/a/rjfdPpajCzwPYD98)
+your terminal
 
-![screenshot1](https://raw.githubusercontent.com/saylesss88/mdbook-kanagawa-theme/master/demo.gif)
+![screenshot1](https://raw.githubusercontent.com/saylesss88/slasher-horrorscripts/main/assets/demo.png)
 
 The original [`cmatrix`](https://github.com/abishekvashok/cmatrix) was written
 in C, and crashes when you wildly resize the window. The rust version is
