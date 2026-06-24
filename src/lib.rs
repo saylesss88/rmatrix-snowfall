@@ -12,7 +12,7 @@ pub mod config;
 use config::Config;
 
 thread_local! {
-    static RNG: RefCell<SmallRng> = RefCell::new(SmallRng::from_os_rng());
+    static RNG: RefCell<SmallRng> = RefCell::new(rand::make_rng());
 }
 
 fn rand_char() -> char {
@@ -78,7 +78,7 @@ impl Column {
                 _ => unreachable!(),
             })
         } else {
-            config.colour
+            config.color
         };
 
         self.col[0].white = RNG.with(|rng| rng.borrow_mut().random_bool(0.25)); // ~64/256 chance

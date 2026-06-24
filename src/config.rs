@@ -34,14 +34,14 @@ struct Opt {
     )]
     update: usize,
 
-    /// Colour of the snowfall
+    /// Color of the snowfall
     #[arg(
         short = 'C',
-        long = "colour",
+        long = "color",
         default_value = "blue",
         value_parser = ["green", "red", "blue", "white", "yellow", "cyan", "magenta", "black"]
     )]
-    colour: String,
+    color: String,
 
     /// Rainbow mode
     #[arg(short = 'r', long = "rainbow")]
@@ -68,7 +68,7 @@ pub struct Config {
     pub screensaver: bool,
     pub xwindow: bool,
     pub update: usize,
-    pub colour: Color,
+    pub color: Color,
     pub rainbow: bool,
     pub pause: bool,
 }
@@ -78,7 +78,7 @@ impl Default for Config {
         // In Clap v4, we use parse() instead of from_args()
         let opt = Opt::parse();
 
-        let colour = match opt.colour.as_str() {
+        let color = match opt.color.as_str() {
             "green" => Color::Green,
             "red" => Color::Red,
             "white" => Color::White,
@@ -97,7 +97,7 @@ impl Default for Config {
             xwindow: opt.xwindow,
             update: opt.update,
             rainbow: opt.rainbow,
-            colour,
+            color,
             pause: false,
         }
     }
@@ -115,32 +115,32 @@ impl Config {
             'B' => self.bold = 2,
             'n' => self.bold = 0,
             '!' => {
-                self.colour = Color::Red;
+                self.color = Color::Red;
                 self.rainbow = false;
             }
             '@' => {
-                self.colour = Color::Green;
+                self.color = Color::Green;
                 self.rainbow = false;
             }
             '#' => {
-                self.colour = Color::Yellow;
+                self.color = Color::Yellow;
                 self.rainbow = false;
             }
             '$' => {
-                self.colour = Color::Blue;
+                self.color = Color::Blue;
                 self.rainbow = false;
             }
             '%' => {
-                self.colour = Color::Magenta;
+                self.color = Color::Magenta;
                 self.rainbow = false;
             }
             'r' => self.rainbow = true,
             '^' => {
-                self.colour = Color::Cyan;
+                self.color = Color::Cyan;
                 self.rainbow = false;
             }
             '&' => {
-                self.colour = Color::White;
+                self.color = Color::White;
                 self.rainbow = false;
             }
             'p' | 'P' => self.pause = !self.pause,
