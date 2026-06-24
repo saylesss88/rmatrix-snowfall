@@ -75,7 +75,6 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        // In Clap v4, we use parse() instead of from_args()
         let opt = Opt::parse();
 
         let color = match opt.color.as_str() {
