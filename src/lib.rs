@@ -24,6 +24,7 @@ fn rand_char() -> char {
     })
 }
 
+/// A single cell within the terminal grid.
 #[derive(Clone)]
 pub struct Block {
     val: char,
@@ -47,6 +48,7 @@ impl Default for Block {
     }
 }
 
+/// A vertical stream of characters that falls down the screen.
 pub struct Column {
     length: usize,        // The length of the stream
     spaces: usize,        // The spaces between streams
@@ -101,6 +103,7 @@ impl std::ops::Index<usize> for Column {
     }
 }
 
+/// The entire terminal display grid, composed of falling character columns.
 pub struct Matrix {
     m: Vec<Column>,
 }
@@ -130,6 +133,10 @@ impl Matrix {
         self[0].col.len()
     }
 
+    /// Advances the animation state by one frame.
+    ///
+    /// This handles spawning new streams, extending existing ones, and shifting
+    /// characters downward based on the provided configuration.
     pub fn arrange(&mut self, config: &Config) {
         let lines = self.num_lines();
 
@@ -218,6 +225,7 @@ impl Matrix {
         Ok(())
     }
 
+    /// Resets the matrix completely, adjusting it to the current terminal window size.
     pub fn resize(&mut self) {
         *self = Self::default();
     }
