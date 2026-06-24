@@ -7,6 +7,7 @@ use rand::rngs::SmallRng;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::io::{self, Write};
+use terminal_size::{terminal_size, Height, Width};
 
 pub mod config;
 use config::Config;
@@ -224,14 +225,14 @@ impl Matrix {
 }
 
 fn get_term_size() -> (usize, usize) {
-    match term_size::dimensions() {
-        Some((width, height)) => {
-            let w = if width < 10 { 10 } else { width };
-            let h = if height < 10 { 10 } else { height };
-            if w % 2 != 0 {
-                (h + 1, (w / 2) + 1)
-            } else {
+    match terminal_size() {
+        Some((Width(w), Height(h))) => {
+            let w = if w < 10 { 10 } else { w } as usize;
+            let h = if h < 10 { 10 } else { h } as usize;
+            if w.is_multiple_of(2) {
                 (h + 1, w / 2)
+            } else {
+                (h + 1, (w / 2) + 1)
             }
         }
         None => (10, 10),
