@@ -31,11 +31,13 @@ performance, due to the underlying use of `ncurses`.
 cargo install r-matrix-snowfall
 ```
 
+To run the binary, use either `r-matrix-snowfall` or the much shorter `rmsf`.
+
 Version check:
 
 ```bash
-r-matrix-snowfall -V
-r-matrix-snowfall --version
+rmsf -V
+rmsf --version
 ```
 
 **Nix**
