@@ -2,8 +2,7 @@ use crossterm::{
     cursor, queue,
     style::{self, Color},
 };
-use rand::prelude::*;
-use rand::rngs::SmallRng;
+use rand::{rngs::SmallRng, RngExt};
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::io::{self, Write};
