@@ -203,9 +203,7 @@ impl Matrix {
                     block.color
                 };
                 let x = u16::try_from(2 * i).unwrap_or(0);
-                let y = u16::try_from(j)
-                    .map(|val| val.saturating_sub(1))
-                    .unwrap_or(0);
+                let y = u16::try_from(j).map_or(0, |val| val.saturating_sub(1));
 
                 queue!(
                     w,
