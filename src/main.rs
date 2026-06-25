@@ -5,7 +5,10 @@ use crossterm::{
     execute,
     terminal::{self, disable_raw_mode, enable_raw_mode},
 };
-use r_matrix_snowfall::{config::Config, Matrix};
+use r_matrix_snowfall::{
+    config::{Config, Opt},
+    Matrix,
+};
 use std::io::stdout;
 use std::time::Duration;
 
@@ -15,8 +18,9 @@ use std::time::Duration;
 struct Args {}
 
 fn main() -> std::io::Result<()> {
+    let opt = Opt::parse();
     // 1. Setup
-    let mut config = Config::default();
+    let mut config = Config::from(opt);
     enable_raw_mode()?;
     let mut stdout = stdout();
     execute!(stdout, terminal::EnterAlternateScreen, cursor::Hide)?;
@@ -29,7 +33,6 @@ fn main() -> std::io::Result<()> {
         // Poll for input (non-blocking)
         if event::poll(Duration::from_millis(10))? {
             match event::read()? {
-                // Collapsed: the pattern extracts 'c' directly from the KeyEvent
                 Event::Key(KeyEvent {
                     code: KeyCode::Char(c),
                     ..

@@ -4,7 +4,7 @@ use crossterm::style::Color;
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
 #[allow(clippy::struct_excessive_bools)]
-struct Opt {
+pub struct Opt {
     /// Bold characters on (can be used multiple times: -b, -bb)
     #[arg(short = 'b', action = ArgAction::Count)]
     bold: u8,
@@ -75,8 +75,22 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        let opt = Opt::parse();
+        Self {
+            bold: 0,
+            console: false,
+            oldstyle: false,
+            screensaver: false,
+            xwindow: false,
+            update: 6,
+            color: Color::Blue,
+            rainbow: false,
+            pause: false,
+        }
+    }
+}
 
+impl From<Opt> for Config {
+    fn from(opt: Opt) -> Self {
         let color = match opt.color.as_str() {
             "green" => Color::Green,
             "red" => Color::Red,
@@ -87,7 +101,6 @@ impl Default for Config {
             "black" => Color::Black,
             _ => Color::Blue,
         };
-
         Self {
             bold: opt.bold as isize,
             console: opt.console,
